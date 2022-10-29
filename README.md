@@ -1,6 +1,15 @@
 # TaskManager
 
 ## Запуск сервера
+Для активации виртуального окружения переходим в 
+```
+TaskManager\API\venv\Scripts>
+```
+И прописываем 
+```
+TaskManager\API\venv\Scripts>activate
+```
+
 После активации venv в папке API/app прописываем команду 
 ```
 uvicorn main:app --reload
