@@ -7,6 +7,6 @@ protocol APIResource {
 
 extension APIResource {
     var url:URL {
-        return URL(string: Resources.Links.API)!
+        return URL(string: Resources.Links.PostURL)!
     }
 }
