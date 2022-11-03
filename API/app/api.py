@@ -43,12 +43,14 @@ async def upload_img(file: list[UploadFile] = File(..., description="Profile pic
 async def tasks_list():
     return tasks
 
+
 @main_router.post('/addTask', response_model=TaskOut)
 async def info(task: Task):
     task_dict = task.dict()
     task_dict.update({"task_id": len(tasks)})
     tasks[len(tasks)] = task_dict
     return task_dict
+    
 
 @main_router.put('/updateTask')
 async def update_task(task: TaskUpdate):

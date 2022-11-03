@@ -9,6 +9,7 @@ class User(BaseModel):
     id: int
     name: str
     description: str | None = None
+    
 
 class UserIn(User):
 
