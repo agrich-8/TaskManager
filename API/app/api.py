@@ -1,5 +1,5 @@
 import shutil
-
+from datetime import datetime
 from email import message
 
 from fastapi import APIRouter
@@ -10,14 +10,21 @@ from fastapi import Form
 from fastapi import File
 from fastapi import UploadFile
 
-from schemas import User
 from schemas import UserIn
 from schemas import UserOut
-from schemas import Task
+from schemas import ProjectIn
+from schemas import ProjectOut
+from schemas import TaskIn
 from schemas import TaskOut
 from schemas import TaskUpdate
 
-main_router = APIRouter()
+from models import User
+from models import Project
+from models import Task
+
+main_router = APIRouter(prefix='/main',
+                        tags=['tasks']
+                        )
 
 
 tasks = {}
@@ -39,23 +46,53 @@ async def upload_img(file: list[UploadFile] = File(..., description="Profile pic
             shutil.copyfileobj(file.file, f)
     return {'filename': file.filename}
 
-@main_router.get('/tasks')
-async def tasks_list():
-    return tasks
+
+@main_router.post('/projectAdd', response_model=ProjectOut)
+async def add_project(project: ProjectIn):
+    project_dict = project.dict()
+    print(project_dict)
+    project_save = Project(**project_dict)
+    saved_project = await project_save.save()
+    return saved_project
 
 
-@main_router.post('/addTask', response_model=TaskOut)
-async def info(task: Task):
+@main_router.post('/taskAdd', response_model=TaskOut)
+async def info(task: TaskIn):
     task_dict = task.dict()
-    task_dict.update({"task_id": len(tasks)})
-    tasks[len(tasks)] = task_dict
-    return task_dict
+    task_save = Task(**task_dict)
+    print(task_dict)
+    saved_task = await task_save.save()
+    return saved_task
     
 
-@main_router.put('/updateTask')
-async def update_task(task: TaskUpdate):
+@main_router.put('/taskUpdate', response_model=TaskOut)
+async def task_update(*, task_id: int = Query(ge=0), task: TaskUpdate):
     task_dict = task.dict(exclude_unset=True)
-    update_task = tasks[task.task_id]
-    for k in task_dict.keys():
-        update_task[k] = task_dict[k]
-    return tasks
+    task = await Task.objects.get(id=task_id)
+    print(task)
+    p = await task.update(**task_dict)
+    return p
+
+
+@main_router.put('/taskCompleted')
+async def task_complete(task_id: int = Query(ge=0)):
+    task = await Task.objects.get(id=task_id)
+    print(task)
+    p = await task.update(is_completed=True, datetime_completion=datetime.now())
+    return p
+
+
+@main_router.put('/taskDelete') #@@@@@@@@@@@@@__delete__@@@@@@@@@@@@@@@
+async def task_delete(task_id: int = Query(ge=0)):
+    task = await Task.objects.get(id=task_id)
+    print(task)
+    p = await task.delete()
+    return task
+
+
+# @main_router.put('/taskList')
+# async def task_list():
+#     task = await Task.objects.get()
+#     print(task)
+#     p = await task.delete()
+#     return task
