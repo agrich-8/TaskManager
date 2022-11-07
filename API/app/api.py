@@ -59,35 +59,35 @@ async def upload_img(file: list[UploadFile] = File(..., description="Profile pic
 def task_add(task: schemas.TaskCreate, db: Session = Depends(get_db)):
     return crud.create_task(db, task=task)
     
-    
-# @main_router.put('/taskUpdate', response_model=TaskOut)
-# async def task_update(*, task_id: int = Query(ge=0), task: TaskUpdate):
-#     task_dict = task.dict(exclude_unset=True)
-#     task = await Task.objects.get(id=task_id)
-#     print(task)
-#     p = await task.update(**task_dict)
-#     return p
+
+@main_router.put('/taskUpdate', response_model=TaskOut)
+async def task_update(*, task_id: int = Query(ge=0), task: TaskUpdate):
+    task_dict = task.dict(exclude_unset=True)
+    task = await Task.objects.get(id=task_id)
+    print(task)
+    p = await task.update(**task_dict)
+    return p
 
 
-# @main_router.put('/taskCompleted')
-# async def task_complete(task_id: int = Query(ge=0)):
-#     task = await Task.objects.get(id=task_id)
-#     print(task)
-#     p = await task.update(is_completed=True, datetime_completion=datetime.now())
-#     return p
+@main_router.put('/taskCompleted')
+async def task_complete(task_id: int = Query(ge=0)):
+    task = await Task.objects.get(id=task_id)
+    print(task)
+    p = await task.update(is_completed=True, datetime_completion=datetime.now())
+    return p
 
 
-# @main_router.put('/taskDelete') #@@@@@@@@@@@@@__delete__@@@@@@@@@@@@@@@
-# async def task_delete(task_id: int = Query(ge=0)):
-#     task = await Task.objects.get(id=task_id)
-#     print(task)
-#     p = await task.delete()
-#     return task
+@main_router.put('/taskDelete') #@@@@@@@@@@@@@__delete__@@@@@@@@@@@@@@@
+async def task_delete(task_id: int = Query(ge=0)):
+    task = await Task.objects.get(id=task_id)
+    print(task)
+    p = await task.delete()
+    return task
 
 
-# @main_router.put('/taskList')
-# async def task_list():
-#     task = await Task.objects.get()
-#     print(task)
-#     p = await task.delete()
-#     return task
+@main_router.put('/taskList')
+async def task_list():
+    task = await Task.objects.get()
+    print(task)
+    p = await task.delete()
+    return task
