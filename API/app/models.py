@@ -6,10 +6,17 @@ from sqlalchemy import String
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Session
 from sqlalchemy.orm import relationship
 from typing import Optional
+from passlib.context import CryptContext
 
-from .database import Base
+
+from sql_app.database import Base
+
+from config import Settings
+
+pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 
 class User(Base):
@@ -22,7 +29,21 @@ class User(Base):
 
     projects = relationship('Project', back_populates='user')
     tasks = relationship('Task', back_populates='user')
-    
+
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute') 
+
+    @password.setter
+    def password(self, password: str):
+        self.hashed_password = pwd_context.hash(password)
+
+    def verify_password(self, plain_password: str):
+        return pwd_context.verify(plain_password, self.hashed_password)
+
+    def get_password_hash(self, password: str):
+        return pwd_context.hash(password)
+
 
 class Project(Base):
     __tablename__ = 'projects'

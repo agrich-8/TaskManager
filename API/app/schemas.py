@@ -1,52 +1,74 @@
 from datetime import datetime
 
 from pydantic import BaseModel
-from pydantic import validator
 from pydantic import Field
 
-class UserP(BaseModel):
-    id: int
-    name: str
-    description: str | None = None
-    
 
-class UserIn(UserP):
+class TaskBase(BaseModel):
+    title: str
+    description: str
+    position: int
+    priority: int
+    datetime_expiration: datetime    
+
+
+class TaskCreate(TaskBase):
+    pass
+
+
+class Task(TaskBase):
+    id: int 
+    is_completed: bool
+    datetime_completion: datetime
+    datetime_added: datetime
+    user_id: int
+    project_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class ProjectBase(BaseModel):
+    title: str
+    is_base_project: bool
+    color: str
+
+
+class ProjectCreate(ProjectBase):
+    pass
+
+
+class Project(ProjectBase):
+    id: int
+    user_id: int
+    tasks: list[Task] = []
+
+    class Config:
+        orm_mode = True
+
+
+class UserBase(BaseModel):
+    username: str
+    email: str
+
+
+class UserCreate(UserBase):
     password: str = Field(..., min_length=6, description='Password must be longer than 6 characters')
 
-class UserOut(UserP):
-    passlen: str
 
-
-class ProjectIn(BaseModel):
-    title: str = Field(default=None)
-    is_base_project: bool = Field(default=False)
-    color: str = Field(default=None)
-
-
-class ProjectOut(ProjectIn):
+class User(UserBase):
     id: int
+    projects: list[Project] = []
+    tasks: list[Task] = []
 
-class TaskIn(BaseModel):
-    title: str = Field(title='The name of the task')
-    description: str = Field(title='The description of the task')
-    position: int = Field(title='')
-    priority: int = Field(title='')
-    datetime_expiration: datetime = Field(title='Date and time the task was completed')
-    project_id: int = Field(title='Project id, for the base project obtained during registration')
-
-class TaskOut(TaskIn):
-    id: int
-    is_completed: bool
-    datetime_completion: datetime | None
-    datetime_added: datetime | None
+    class Config:
+        orm_mode = True
 
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
 
-class TaskUpdate(BaseModel):
-    title: str | None = None
-    description: str | None = None
-    position: int | None = None
-    priority: int | None = None
-    datetime_expiration: datetime | None = None
-    project_id: int | None = None
 
+class TokenData(BaseModel):
+    username: str | None = None
