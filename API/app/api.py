@@ -13,7 +13,6 @@ from fastapi import Depends
 from fastapi import UploadFile
 from fastapi import HTTPException
 from fastapi import status
-from fastapi.security import OAuth2PasswordBearer
 from fastapi.security import OAuth2PasswordRequestForm
 
 from sqlalchemy.orm import Session
@@ -23,7 +22,6 @@ import models
 import actions
 import config
 from actions import get_db
-# from sql_app.database import SessionLocal
 
 
 main_router = APIRouter(prefix='/main',
