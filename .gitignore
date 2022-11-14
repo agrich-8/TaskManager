@@ -709,3 +709,10 @@ API/venv/Scripts/pyrsa-keygen.exe
 API/venv/Scripts/pyrsa-priv2pub.exe
 API/venv/Scripts/pyrsa-sign.exe
 API/venv/Scripts/pyrsa-verify.exe
+API/app/__pycache__/main.cpython-310.pyc
+API/app/__pycache__/main.cpython-310.pyc
+API/app/__pycache__/main.cpython-310.pyc
+API/app/__pycache__/schemas.cpython-310.pyc
+API/app/sql_app/__pycache__/__init__.cpython-310.pyc
+API/app/sql_app/__pycache__/database.cpython-310.pyc
+API/app/__pycache__/main.cpython-310.pyc

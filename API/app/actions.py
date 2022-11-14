@@ -41,19 +41,24 @@ def get_user(username: str = None, email: str = None):
 def create_user(user: schemas.UserCreate):
     db = next(get_db())
     user_dict = user.dict()
-    exception_409(username=user_dict['username'], email=user_dict['email'])
-    print('sdcasdcads')
+    exception_409_user(username=user_dict['username'], email=user_dict['email'])
     db_user = models.User(**user_dict)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    project_dict = {
+                "is_base_project": True,
+                "title": "Base",
+                "color": "string"
+                }
+    project = schemas.ProjectPrimary(**project_dict)
+    create_project(project, db_user.id)
     return db_user
 
-
-def update(user_id: int, username=None, email=None, password=None):
+def update_user(user_id: int, username=None, email=None, password=None):
     db = next(get_db())
     user = db.query(models.User).filter(models.User.id == user_id).first()
-    exception_409(username=username, email=email)
+    exception_409_user(username=username, email=email)
     if username:
         user.username = username        
     if email:
@@ -66,7 +71,7 @@ def update(user_id: int, username=None, email=None, password=None):
     return user
 
 
-def exception_409(username: str = None, email: str = None):
+def exception_409_user(username: str = None, email: str = None):
     if get_user(username=username):
         exception_text = 'A user with the same username already exists'
         exception = HTTPException(
@@ -126,7 +131,37 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
     
 
-    
+def get_project(project_id: int, user_id: int, limit: int = 20):
+    db = next(get_db())    
+    if project_id:
+        return db.query(models.Project).filter(models.Project.user_id == user_id, models.Project.id == project_id).first()
+    return db.query(models.Project).filter(models.Project.user_id == user_id).limit(limit).all()
+
+
+def create_project(project: schemas.ProjectCreate|schemas.ProjectPrimary, user_id: int):
+    db = next(get_db())    
+    project_dict = project.dict()
+    project_dict['user_id'] = user_id
+    db_project = models.Project(**project_dict)
+    db.add(db_project)
+    db.commit()
+    db.refresh(db_project)
+    return db_project
+
+
+def update_project(user_id: int, id: int = None, title: str = None, color: str = None):
+    db = next(get_db())
+    project = db.query(models.Project).filter(models.User.id == user_id, models.Project.id == id).first()   
+    if title:
+        project.title = title
+    if color:
+        project.color = color
+    db.add(project)
+    db.commit()
+    db.refresh(project)
+    return project
+
+
 def get_tasks(user: schemas.User):
     db = next(get_db())
     return db.query(models.Task).filter(models.Task.user_id == user.id).first()
@@ -134,11 +169,9 @@ def get_tasks(user: schemas.User):
 
 def create_task(task: schemas.TaskCreate, user_id: int):
     db = next(get_db())
-    task = task.dict()
-    task['user_id'] = user_id
-    db_task = models.Task(**task)
-    print(db_task)
-
+    task_dict = task.dict()
+    task_dict['user_id'] = user_id
+    db_task = models.Task(**task_dict)
     db.add(db_task)
     db.commit()
     db.refresh(db_task)

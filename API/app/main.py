@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-# from sqlalchemy.orm import sessionmaker
 
 from actions import get_db
 from api import main_router

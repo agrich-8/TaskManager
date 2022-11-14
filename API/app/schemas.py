@@ -30,8 +30,11 @@ class Task(TaskBase):
 
 class ProjectBase(BaseModel):
     title: str
-    is_base_project: bool
     color: str
+
+
+class ProjectPrimary(ProjectBase):
+    is_base_project: bool = True
 
 
 class ProjectCreate(ProjectBase):
@@ -40,11 +43,17 @@ class ProjectCreate(ProjectBase):
 
 class Project(ProjectBase):
     id: int
+    is_base_project: bool = False
     user_id: int
     tasks: list[Task] = []
 
     class Config:
         orm_mode = True
+
+class ProjectUpdate(BaseModel):
+    id: int | None = None
+    title: str | None = None
+    color: str | None = None
 
 
 class UserBase(BaseModel):

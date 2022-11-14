@@ -64,10 +64,41 @@ def add_user(user: schemas.UserCreate):
 
 
 @main_router.put('/user')
-def update_user(update: schemas.UserUpdate, current_user: models.User = Depends(actions.get_current_user)):
-    update = update.dict()
-    user = actions.update(current_user.id, **update)
+def update_user(
+                user_update: schemas.UserUpdate, 
+                current_user: models.User = Depends(actions.get_current_user)
+                ):
+    user_update_dict = user_update.dict()
+    user = actions.update_user(current_user.id, **user_update_dict)
     return user
+
+
+@main_router.get('/project')
+def info_project(
+                project_id: int|None = None, 
+                current_user: models.User = Depends(actions.get_current_user)
+                ):
+    projects = actions.get_project(project_id=project_id, user_id=current_user.id)
+    return projects
+
+
+@main_router.post('/project')
+def add_project(
+                project: schemas.ProjectCreate, 
+                current_user: models.User = Depends(actions.get_current_user)
+                ):
+    db_project = actions.create_project(project, current_user.id)
+    return db_project
+
+
+@main_router.put('/project')
+def update_project(
+                    project_update: schemas.ProjectUpdate, 
+                    current_user: models.User = Depends(actions.get_current_user)
+                    ):
+    project_update_dict = project_update.dict()
+    project = actions.update_project(user_id=current_user.id, **project_update_dict)
+    return project
 
 
 @main_router.get('/tasks')
