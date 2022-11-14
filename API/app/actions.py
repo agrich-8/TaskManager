@@ -5,8 +5,6 @@ from fastapi import HTTPException
 from fastapi import status
 from fastapi import Depends
 from sqlalchemy.orm import Session
-# from main import SessionLocal
-
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 
@@ -17,8 +15,7 @@ from sql_app.database import SessionLocal
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="main/token")
 
-# def get_db():
-#     raise NotImplementedError
+
 
 def get_db():
     db = SessionLocal()
