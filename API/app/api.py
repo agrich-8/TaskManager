@@ -75,10 +75,11 @@ def update_user(
 
 @main_router.get('/project')
 def info_project(
-                project_id: int|None = None, 
+                project_id: int | None = None, 
+                base: bool | None = None,
                 current_user: models.User = Depends(actions.get_current_user)
                 ):
-    projects = actions.get_project(project_id=project_id, user_id=current_user.id)
+    projects = actions.get_project(project_id=project_id, user_id=current_user.id, base=base)
     return projects
 
 
@@ -87,7 +88,7 @@ def add_project(
                 project: schemas.ProjectCreate, 
                 current_user: models.User = Depends(actions.get_current_user)
                 ):
-    db_project = actions.create_project(project, current_user.id)
+    db_project = actions.create_project(project=project, user_id=current_user.id)
     return db_project
 
 
@@ -101,9 +102,12 @@ def update_project(
     return project
 
 
-@main_router.get('/tasks')
-def info_tasks(current_user: schemas.User = Depends(actions.get_current_user)):
-    tasks = actions.get_tasks(current_user)
+@main_router.get('/task')
+def info_task(
+                task_id: int | None = None,
+                current_user: schemas.User = Depends(actions.get_current_user)
+                ):
+    tasks = actions.get_tasks(task_id=task_id, user_id=current_user.id)
     return tasks
 
 
@@ -115,35 +119,12 @@ def add_task(
     db_task = actions.create_task(task=task, user_id=current_user.id)
     return db_task
     
-    
-# @main_router.put('/taskUpdate', response_model=TaskOut)
-# async def task_update(*, task_id: int = Query(ge=0), task: TaskUpdate):
-#     task_dict = task.dict(exclude_unset=True)
-#     task = await Task.objects.get(id=task_id)
-#     print(task)
-#     p = await task.update(**task_dict)
-#     return p
 
-
-# @main_router.put('/taskCompleted')
-# async def task_complete(task_id: int = Query(ge=0)):
-#     task = await Task.objects.get(id=task_id)
-#     print(task)
-#     p = await task.update(is_completed=True, datetime_completion=datetime.now())
-#     return p
-
-
-# @main_router.put('/taskDelete') #@@@@@@@@@@@@@__delete__@@@@@@@@@@@@@@@
-# async def task_delete(task_id: int = Query(ge=0)):
-#     task = await Task.objects.get(id=task_id)
-#     print(task)
-#     p = await task.delete()
-#     return task
-
-
-# @main_router.put('/taskList')q
-# async def task_list():
-#     task = await Task.objects.get()
-#     print(task)
-#     p = await task.delete()
-#     return task
+@main_router.put('/task')
+def update_task(
+                    task_update: schemas.TaskUpdate, 
+                    current_user: models.User = Depends(actions.get_current_user)
+                    ):
+    task_update_dict = task_update.dict()
+    task = actions.update_task(user_id=current_user.id, **task_update_dict)
+    return task

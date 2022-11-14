@@ -9,11 +9,13 @@ class TaskBase(BaseModel):
     description: str
     position: int
     priority: int
-    datetime_expiration: datetime    
+    datetime_expiration: datetime
+
+
 
 
 class TaskCreate(TaskBase):
-    pass
+    project_id: int | None = None
 
 
 class Task(TaskBase):
@@ -21,11 +23,23 @@ class Task(TaskBase):
     is_completed: bool
     datetime_completion: datetime
     datetime_added: datetime
-    user_id: int
     project_id: int
+    user_id: int
 
     class Config:
         orm_mode = True
+
+
+class TaskUpdate(BaseModel):
+    id: int 
+    title: str | None 
+    description: str | None
+    position: int | None
+    priority: int | None
+    datetime_expiration: datetime | None
+    is_completed: bool | None
+    datetime_completion: datetime | None
+    project_id: int | None
 
 
 class ProjectBase(BaseModel):
@@ -51,7 +65,7 @@ class Project(ProjectBase):
         orm_mode = True
 
 class ProjectUpdate(BaseModel):
-    id: int | None = None
+    id: int 
     title: str | None = None
     color: str | None = None
 
