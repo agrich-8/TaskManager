@@ -13,7 +13,6 @@ from fastapi import Depends
 from fastapi import UploadFile
 from fastapi import HTTPException
 from fastapi import status
-from fastapi.security import OAuth2PasswordBearer
 from fastapi.security import OAuth2PasswordRequestForm
 
 from sqlalchemy.orm import Session
@@ -22,7 +21,7 @@ import schemas
 import models
 import actions
 import config
-from sql_app.database import SessionLocal
+from actions import get_db
 
 
 main_router = APIRouter(prefix='/main',
@@ -31,8 +30,7 @@ main_router = APIRouter(prefix='/main',
 
 
 @main_router.post("/token", response_model=schemas.Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(actions.get_db)):
-    print('sdcasdcasdcadsc')
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = actions.authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -54,38 +52,36 @@ async def upload_img(file: list[UploadFile] = File(..., description="Profile pic
     return {'filename': file.filename}
 
 
-@main_router.get('/user')
-def info_user(token: str, db: Session = Depends(actions.get_db)):
-    user = actions.get_current_user(db, token)
-    return {"token": user}
+@main_router.get('/user', response_model=schemas.User)
+def info_user(current_user: models.User = Depends(actions.get_current_user)):
+    return current_user
+ 
 
-
-@main_router.post('/user')
+@main_router.post('/user', response_model=schemas.User, response_model_exclude_unset=True)
 def add_user(user: schemas.UserCreate):
-    try:
-        db_user = actions.create_user(user)
-    except NameError:
-        return {"NameError": 'User already exists'}
+    db_user = actions.create_user(user)
     return db_user
 
 
-@main_router.post('/user_ccc')
-def userccc(user: schemas.UserCreate, db: Session = Depends(actions.get_db)):
-    user_dict = user.dict()
-    db_user = actions.get_user(db, user_dict['username'])
-    ver = db_user.verify_password(user_dict['password'])
-    return ver
+@main_router.put('/user')
+def update_user(update: schemas.UserUpdate, current_user: models.User = Depends(actions.get_current_user)):
+    update = update.dict()
+    user = actions.update(current_user.id, **update)
+    return user
 
 
-@main_router.get('/task')
-def info_user(token: str):
-    user = actions.get_task(token)
-    return {"token": user}
+@main_router.get('/tasks')
+def info_tasks(current_user: schemas.User = Depends(actions.get_current_user)):
+    tasks = actions.get_tasks(current_user)
+    return tasks
 
 
 @main_router.post('/task')
-def add_task(task: schemas.TaskCreate):
-    db_task = actions.create_task(task=task)
+def add_task(
+            task: schemas.TaskCreate,
+            current_user: schemas.User = Depends(actions.get_current_user)
+            ):
+    db_task = actions.create_task(task=task, user_id=current_user.id)
     return db_task
     
     

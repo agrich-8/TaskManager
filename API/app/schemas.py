@@ -58,11 +58,17 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    projects: list[Project] = []
-    tasks: list[Task] = []
+    # projects: list[Project] = []
+    # tasks: list[Task] = []
 
     class Config:
         orm_mode = True
+
+
+class UserUpdate(BaseModel):
+    username: str | None = None
+    email: str | None = None
+    password: str | None= Field(None, min_length=6, description='Password must be longer than 6 characters')
 
 
 class Token(BaseModel):
@@ -72,3 +78,9 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
+
+class ErrorData(BaseModel):
+    nameerror: str
+    
+class Detail(BaseModel):
+    detail: str
