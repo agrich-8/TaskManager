@@ -1,13 +1,7 @@
 import shutil
-from datetime import datetime
 from datetime import timedelta
-from email import message
 
 from fastapi import APIRouter
-from fastapi import Body
-from fastapi import Query
-from fastapi import Path
-from fastapi import Form
 from fastapi import File
 from fastapi import Depends
 from fastapi import UploadFile
@@ -41,12 +35,12 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-# @main_router.post('/uploadImg')
-# async def upload_img(file: list[UploadFile] = File(..., description="Profile picture")):
-#     for file in file:
-#         with open(f'{file.filename}', 'wb') as f:
-#             shutil.copyfileobj(file.file, f)
-#     return {'filename': file.filename}
+@main_router.post('/uploadImg')
+async def upload_img(file: list[UploadFile] = File(..., description="Profile picture")):
+    for file in file:
+        with open(f'{file.filename}', 'wb') as f:
+            shutil.copyfileobj(file.file, f)
+    return {'filename': file.filename}
 
 
 @main_router.get('/user', response_model=schemas.User)

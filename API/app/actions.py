@@ -4,7 +4,6 @@ from datetime import datetime
 from fastapi import HTTPException
 from fastapi import status
 from fastapi import Depends
-from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
