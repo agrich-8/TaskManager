@@ -1,3 +1,4 @@
 API/venv
 API/app/__pycache__
 API/app/sqlite.db
+API/app/sql_app/__pycache__

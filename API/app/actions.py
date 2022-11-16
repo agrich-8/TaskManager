@@ -15,7 +15,6 @@ from sql_app.database import SessionLocal
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="main/token")
 
 
-
 def get_db():
     db = SessionLocal()
     try:
@@ -51,6 +50,7 @@ def create_user(user: schemas.UserCreate):
     project = schemas.ProjectPrimary(**primary_project_dict)
     create_project(project, db_user.id)
     return db_user
+
 
 def update_user(user_id: int, username=None, email=None, password=None):
     db = next(get_db())

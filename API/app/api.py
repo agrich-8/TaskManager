@@ -28,11 +28,11 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+            )
     access_token_expires = timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = actions.create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
-    )
+        )
     return {"access_token": access_token, "token_type": "bearer"}
 
 @main_router.post('/uploadImg')
@@ -94,9 +94,9 @@ def update_project(
 
 @main_router.get('/task', response_model=schemas.Task)
 def info_task(
-                task_id: int | None = None,
-                current_user: schemas.User = Depends(actions.get_current_user)
-                ):
+            task_id: int | None = None,
+            current_user: schemas.User = Depends(actions.get_current_user)
+            ):
     tasks = actions.get_tasks(task_id=task_id, user_id=current_user.id)
     return tasks
 
@@ -112,9 +112,9 @@ def add_task(
 
 @main_router.put('/task', response_model=schemas.Task)
 def update_task(
-                    task_update: schemas.TaskUpdate, 
-                    current_user: models.User = Depends(actions.get_current_user)
-                    ):
+                task_update: schemas.TaskUpdate, 
+                current_user: models.User = Depends(actions.get_current_user)
+                ):
     task_update_dict = task_update.dict()
     task = actions.update_task(user_id=current_user.id, **task_update_dict)
     return task
