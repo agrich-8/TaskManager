@@ -3,11 +3,11 @@ from fastapi import FastAPI
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 
+import models
 from actions import get_db
 from api import main_router
-from sql_app.database import SessionLocal
-import models
-from sql_app.database import engine
+from database import SessionLocal
+from database import engine
 from config import settings
 
 async def get_db_reak():

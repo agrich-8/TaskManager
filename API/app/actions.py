@@ -10,7 +10,7 @@ from jose import JWTError, jwt
 import models
 import schemas
 import config
-from sql_app.database import SessionLocal
+from database import SessionLocal
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="main/token")
 
