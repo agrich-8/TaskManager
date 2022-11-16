@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from fastapi import status
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
 import models
@@ -38,17 +38,18 @@ def get_user(username: str = None, email: str = None):
 def create_user(user: schemas.UserCreate):
     db = next(get_db())
     user_dict = user.dict()
+    print(user_dict)
     exception_409_user(username=user_dict['username'], email=user_dict['email'])
     db_user = models.User(**user_dict)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    project_dict = {
+    primary_project_dict = {
                 "is_base_project": True,
                 "title": "Base",
                 "color": "string"
                 }
-    project = schemas.ProjectPrimary(**project_dict)
+    project = schemas.ProjectPrimary(**primary_project_dict)
     create_project(project, db_user.id)
     return db_user
 
@@ -86,9 +87,7 @@ def exception_409_user(username: str = None, email: str = None):
         raise exception
 
 
-def authenticate_user(db: Session, username: str, password: str):
-    print('sdfvsdfvsdfvsdfvsdfvsdfvsdfv')
-    print(username, password)
+def authenticate_user(username: str, password: str):
     user = get_user(username)
     if not user:
         return False

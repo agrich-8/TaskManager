@@ -2,11 +2,12 @@ from datetime import datetime
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import EmailStr
 
 
 class TaskBase(BaseModel):
-    title: str
-    description: str
+    title: str = Field(min_length=1 , max_length=50, description='Title must be no longer than 50 characters')
+    description: str = Field(min_length=1 , max_length=500, description='Description must be no longer than 500 characters')
     position: int
     priority: int
     datetime_expiration: datetime
@@ -21,7 +22,7 @@ class TaskCreate(TaskBase):
 class Task(TaskBase):
     id: int 
     is_completed: bool
-    datetime_completion: datetime
+    datetime_completion: datetime | None
     datetime_added: datetime
     project_id: int
     user_id: int
@@ -32,8 +33,8 @@ class Task(TaskBase):
 
 class TaskUpdate(BaseModel):
     id: int 
-    title: str | None 
-    description: str | None
+    title: str | None = Field(min_length=1 , max_length=50, description='Title must be no longer than 50 characters')
+    description: str | None = Field(min_length=1 , max_length=500, description='Description must be no longer than 500 characters')
     position: int | None
     priority: int | None
     datetime_expiration: datetime | None
@@ -43,7 +44,7 @@ class TaskUpdate(BaseModel):
 
 
 class ProjectBase(BaseModel):
-    title: str
+    title: str = Field(min_length=1 , max_length=50, description='Title must be no longer than 50 characters')
     color: str
 
 
@@ -66,31 +67,30 @@ class Project(ProjectBase):
 
 class ProjectUpdate(BaseModel):
     id: int 
-    title: str | None = None
+    title: str | None = Field(None, min_length=1 , max_length=50, description='Title must be no longer than 50 characters')
     color: str | None = None
 
 
 class UserBase(BaseModel):
-    username: str
-    email: str
+    username: str = Field(min_length=1 , max_length=30, description='Username must be no longer than 30 characters')
+    email: EmailStr = Field(description='user@example.com')
 
 
 class UserCreate(UserBase):
-    password: str = Field(..., min_length=6, description='Password must be longer than 6 characters')
+    password: str = Field(..., min_length=6, max_length=33, description='Password must be longer than 6 characters')
 
 
 class User(UserBase):
     id: int
-    # projects: list[Project] = []
-    # tasks: list[Task] = []
+    projects: list[Project] = []
 
     class Config:
         orm_mode = True
 
 
 class UserUpdate(BaseModel):
-    username: str | None = None
-    email: str | None = None
+    username: str | None =  Field(None, min_length=1 , max_length=30, description='Username must be no longer than 30 characters')
+    email: EmailStr | None = Field(None, description='user@example.com')
     password: str | None= Field(None, min_length=6, description='Password must be longer than 6 characters')
 
 
