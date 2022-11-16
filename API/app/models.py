@@ -6,15 +6,12 @@ from sqlalchemy import String
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Session
 from sqlalchemy.orm import relationship
-from typing import Optional
 from passlib.context import CryptContext
 
 
 from sql_app.database import Base
 
-from config import Settings
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 

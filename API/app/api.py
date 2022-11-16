@@ -1,13 +1,7 @@
 import shutil
-from datetime import datetime
 from datetime import timedelta
-from email import message
 
 from fastapi import APIRouter
-from fastapi import Body
-from fastapi import Query
-from fastapi import Path
-from fastapi import Form
 from fastapi import File
 from fastapi import Depends
 from fastapi import UploadFile
@@ -15,13 +9,10 @@ from fastapi import HTTPException
 from fastapi import status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from sqlalchemy.orm import Session
-
 import schemas
 import models
 import actions
 import config
-from actions import get_db
 
 
 main_router = APIRouter(prefix='/main',
@@ -30,8 +21,8 @@ main_router = APIRouter(prefix='/main',
 
 
 @main_router.post("/token", response_model=schemas.Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = actions.authenticate_user(db, form_data.username, form_data.password)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = actions.authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -58,12 +49,11 @@ def info_user(current_user: models.User = Depends(actions.get_current_user)):
  
 
 @main_router.post('/user', response_model=schemas.User, response_model_exclude_unset=True)
-def add_user(user: schemas.UserCreate):
-    db_user = actions.create_user(user)
+def add_user(db_user: schemas.User = Depends(actions.create_user)):
     return db_user
 
 
-@main_router.put('/user')
+@main_router.put('/user', response_model=schemas.User)
 def update_user(
                 user_update: schemas.UserUpdate, 
                 current_user: models.User = Depends(actions.get_current_user)
@@ -73,7 +63,7 @@ def update_user(
     return user
 
 
-@main_router.get('/project')
+@main_router.get('/project', response_model=schemas.Project)
 def info_project(
                 project_id: int | None = None, 
                 base: bool | None = None,
@@ -83,7 +73,7 @@ def info_project(
     return projects
 
 
-@main_router.post('/project')
+@main_router.post('/project', response_model=schemas.Project)
 def add_project(
                 project: schemas.ProjectCreate, 
                 current_user: models.User = Depends(actions.get_current_user)
@@ -92,7 +82,7 @@ def add_project(
     return db_project
 
 
-@main_router.put('/project')
+@main_router.put('/project', response_model=schemas.Project)
 def update_project(
                     project_update: schemas.ProjectUpdate, 
                     current_user: models.User = Depends(actions.get_current_user)
@@ -102,7 +92,7 @@ def update_project(
     return project
 
 
-@main_router.get('/task')
+@main_router.get('/task', response_model=schemas.Task)
 def info_task(
                 task_id: int | None = None,
                 current_user: schemas.User = Depends(actions.get_current_user)
@@ -111,7 +101,7 @@ def info_task(
     return tasks
 
 
-@main_router.post('/task')
+@main_router.post('/task', response_model=schemas.Task)
 def add_task(
             task: schemas.TaskCreate,
             current_user: schemas.User = Depends(actions.get_current_user)
@@ -120,7 +110,7 @@ def add_task(
     return db_task
     
 
-@main_router.put('/task')
+@main_router.put('/task', response_model=schemas.Task)
 def update_task(
                     task_update: schemas.TaskUpdate, 
                     current_user: models.User = Depends(actions.get_current_user)
