@@ -21,7 +21,7 @@ class TaskCreate(TaskBase):
 
 class Task(TaskBase):
     id: int 
-    is_completed: bool
+    is_completed: bool | None
     datetime_completion: datetime | None
     datetime_added: datetime
     project_id: int
