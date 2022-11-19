@@ -63,7 +63,7 @@ def update_user(
     return user
 
 
-@main_router.get('/project', response_model=schemas.Project)
+@main_router.get('/project', response_model=schemas.Project | list[schemas.Project])
 def info_project(
                 project_id: int | None = None, 
                 base: bool | None = None,
@@ -92,6 +92,15 @@ def update_project(
     return project
 
 
+@main_router.delete('/project', response_model=schemas.Project)
+def delete_project(
+                project_id: int,
+                current_user: models.User = Depends(actions.get_current_user)
+                ):
+    project = actions.delete_project(project_id=project_id, user_id=current_user.id)
+    return project
+
+
 @main_router.get('/task', response_model=schemas.Task)
 def info_task(
             task_id: int | None = None,
@@ -117,4 +126,13 @@ def update_task(
                 ):
     task_update_dict = task_update.dict()
     task = actions.update_task(user_id=current_user.id, **task_update_dict)
+    return task
+
+
+@main_router.delete('/task', response_model=schemas.Task)
+def delete_task(
+                task_id: int,
+                current_user: models.User = Depends(actions.get_current_user)
+                ):
+    task = actions.delete_task(task_id=task_id, user_id=current_user.id)
     return task

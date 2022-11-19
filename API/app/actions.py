@@ -1,6 +1,7 @@
 from datetime import timedelta
 from datetime import datetime
 
+import sqlalchemy
 from fastapi import HTTPException
 from fastapi import status
 from fastapi import Depends
@@ -21,6 +22,32 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def exception_409(exception_text: str):
+    exception = HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=f"{exception_text}"
+                    )
+    raise exception
+
+
+def exception_409_user(username: str | None = None, email: str | None = None):
+    if get_user(username=username):
+        exception_text = 'User with the same username already exists'
+        exception = HTTPException(
+                        status_code=status.HTTP_409_CONFLICT,
+                        detail=f"{exception_text}"
+                        )
+        raise exception
+
+    if get_user(email=email):
+        exception_text = 'User with the same email already exists'
+        exception = HTTPException(
+                        status_code=status.HTTP_409_CONFLICT,
+                        detail=f"{exception_text}"
+                        )
+        raise exception
 
 
 def get_user(username: str = None, email: str = None):
@@ -66,24 +93,6 @@ def update_user(user_id: int, username=None, email=None, password=None):
     db.commit()
     db.refresh(user)
     return user
-
-
-def exception_409_user(username: str = None, email: str = None):
-    if get_user(username=username):
-        exception_text = 'User with the same username already exists'
-        exception = HTTPException(
-                        status_code=status.HTTP_409_CONFLICT,
-                        detail=f"{exception_text}"
-                        )
-        raise exception
-
-    if get_user(email=email):
-        exception_text = 'User with the same email already exists'
-        exception = HTTPException(
-                        status_code=status.HTTP_409_CONFLICT,
-                        detail=f"{exception_text}"
-                        )
-        raise exception
 
 
 def authenticate_user(username: str, password: str):
@@ -133,15 +142,15 @@ def get_project(
                 limit: int = 20
                 ):
     db = next(get_db())
-    if base:
+    if base is True:
         return db.query(models.Project).filter(models.Project.user_id == user_id, models.Project.is_base_project == base).first()
     if project_id:
-        return db.query(models.Project).filter(models.Project.user_id == user_id, models.Project.id == project_id).first()
+        return db.query(models.Project).filter(models.Project.id == project_id).first()
     return db.query(models.Project).filter(models.Project.user_id == user_id).limit(limit).all()
 
 
 def create_project(project: schemas.ProjectCreate|schemas.ProjectPrimary, user_id: int):
-    db = next(get_db())    
+    db = next(get_db())
     project_dict = project.dict()
     project_dict['user_id'] = user_id
     db_project = models.Project(**project_dict)
@@ -158,7 +167,9 @@ def update_project(
                     color: str = None
                     ):
     db = next(get_db())
-    project = db.query(models.Project).filter(models.User.id == user_id, models.Project.id == id).first()   
+    project = db.query(models.Project).filter(models.User.id == user_id, models.Project.id == id).first()
+    if project is None:
+        exception_409(exception_text='The user has no specified project')
     if title:
         project.title = title
     if color:
@@ -166,6 +177,20 @@ def update_project(
     db.add(project)
     db.commit()
     db.refresh(project)
+    return project
+
+
+def delete_project(project_id: int, user_id: int):
+    db = next(get_db())
+    try:
+        tasks = db.query(models.Task).filter(models.User.id == user_id, models.Task.project_id == project_id).all()
+        for task in tasks:
+            delete_task(task_id=task.id, user_id=user_id)
+        project = db.query(models.Project).filter(models.User.id == user_id, models.Project.id == project_id).first()
+        db.delete(project)
+        db.commit()
+    except sqlalchemy.orm.exc.UnmappedInstanceError:
+        raise exception_409(exception_text='The user has no specified project')
     return project
 
 
@@ -221,7 +246,10 @@ def update_task(user_id: int,
                         status_code=status.HTTP_409_CONFLICT,
                         detail="The user has no specified projects"
                         )
+    
     task = db.query(models.Task).filter(models.User.id == user_id, models.Task.id == id).first()   
+    if task is None:
+        raise exception
     if id:
         task.id = id
     if title:
@@ -239,12 +267,28 @@ def update_task(user_id: int,
     if datetime_completion:
         task.datetime_completion = datetime_completion
     if project_id:
-        projects = [p.id for p in get_project(user_id=user_id)]
-        if project_id not in projects:
-            raise exception
+        project = get_project(user_id=user_id, project_id=project_id)
+        if project is None:
+            exception_409(exception_text='The user has no specified projects')
         task.project_id = project_id
 
     db.add(task)
     db.commit()
     db.refresh(task)
     return task
+
+
+def delete_task(task_id: int, user_id: int):
+    db = next(get_db())
+    exception = HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="The user has no specified task"
+                    )
+    try:
+        task = db.query(models.Task).filter(models.User.id == user_id, models.Task.id == task_id).first()
+        db.delete(task)
+        db.commit()
+    except sqlalchemy.orm.exc.UnmappedInstanceError:
+        raise exception
+    return task
+

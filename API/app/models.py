@@ -24,8 +24,8 @@ class User(Base):
     email = Column(String, max_length=50)
     hashed_password = Column(String)
 
-    projects = relationship('Project', back_populates='user')
-    tasks = relationship('Task', back_populates='user')
+    projects = relationship('Project', back_populates='user', passive_deletes=True, lazy='subquery')
+    tasks = relationship('Task', back_populates='user', passive_deletes=True, lazy='subquery')
 
     @property
     def password(self):
@@ -51,8 +51,8 @@ class Project(Base):
     color = Column(String, max_length=10)
     user_id = Column(Integer, ForeignKey('users.id'))
 
-    user = relationship('User', back_populates='projects')
-    tasks = relationship('Task', back_populates='project')
+    user = relationship('User', back_populates='projects', passive_deletes=True, lazy='subquery')
+    tasks = relationship('Task', back_populates='project', passive_deletes=True, lazy='subquery')
 
 
 
@@ -71,5 +71,6 @@ class Task(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     project_id = Column(Integer, ForeignKey('projects.id'))
 
-    user = relationship('User', back_populates='tasks')
-    project = relationship('Project', back_populates='tasks')
+    user = relationship('User', back_populates='tasks', passive_deletes=True, lazy='subquery')
+    project = relationship('Project', back_populates='tasks', passive_deletes=True, lazy='subquery')
+
