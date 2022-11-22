@@ -25,7 +25,6 @@ def send_email1(email, username, code):
         server.sendmail(sender_email, receiver_email, msg.as_string())
 
 
-
 def send_email2(email: str | None, username, code):
     port = 587  # For starttls
     smtp_server = "smtp.yandex.ru"
