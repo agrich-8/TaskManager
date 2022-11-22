@@ -65,6 +65,7 @@ class Task(Base):
     is_completed = Column(Boolean, default=False)
     position = Column(Integer)
     priority = Column(Integer)
+    section = Column(String)
     datetime_expiration = Column(DateTime)
     datetime_completion = Column(DateTime, nullable=True)
     datetime_added = Column(DateTime, default=datetime.datetime.now)
