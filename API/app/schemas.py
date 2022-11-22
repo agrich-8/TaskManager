@@ -10,9 +10,8 @@ class TaskBase(BaseModel):
     description: str = Field(min_length=1 , max_length=500, description='Description must be no longer than 500 characters')
     position: int
     priority: int
+    section: str
     datetime_expiration: datetime
-
-
 
 
 class TaskCreate(TaskBase):

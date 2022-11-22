@@ -2,17 +2,17 @@ import shutil
 from datetime import timedelta
 
 from fastapi import APIRouter
-from fastapi import File
 from fastapi import Depends
-from fastapi import UploadFile
 from fastapi import HTTPException
 from fastapi import status
+from fastapi import BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 
 import schemas
 import models
 import actions
 import config
+import email_send
 
 
 main_router = APIRouter(prefix='/main',
@@ -35,17 +35,26 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@main_router.post('/uploadImg')
-async def upload_img(file: list[UploadFile] = File(..., description="Profile picture")):
-    for file in file:
-        with open(f'{file.filename}', 'wb') as f:
-            shutil.copyfileobj(file.file, f)
-    return {'filename': file.filename}
-
 
 @main_router.get('/user', response_model=schemas.User)
-def info_user(current_user: models.User = Depends(actions.get_current_user)):
+def get_info_user(current_user: models.User = Depends(actions.get_current_user)):
     return current_user
+
+
+@main_router.get('/code')
+def get_change_code(
+                    background_tasks: BackgroundTasks,
+                    code: int = Depends(actions.create_change_coge),
+                    currrent_user: models.User = Depends(actions.get_current_user)
+                    ):
+
+    background_tasks.add_task(
+                            email_send.send_email1, 
+                            email=currrent_user.email, 
+                            username=currrent_user.username,
+                            code=code
+                            )
+    return code
  
 
 @main_router.post('/user', response_model=schemas.User, response_model_exclude_unset=True)
@@ -136,3 +145,4 @@ def delete_task(
                 ):
     task = actions.delete_task(task_id=task_id, user_id=current_user.id)
     return task
+
