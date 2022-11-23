@@ -3,7 +3,7 @@ import os
 from pydantic import BaseSettings
 
 
-file_path = os.path.abspath(os.getcwd())+"\database.db"
+file_path = os.path.abspath(os.getcwd())+r"\API\app\db\database.db"
 
 SECRET_KEY = 'CsJWl1OLyjkw8RJHEvAHoAtpnlbF/+fYd02D+lpAoOE='
 ALGORITHM = "HS256"

@@ -2,5 +2,10 @@ API/venv
 API/app/__pycache__
 API/app/sqlite.db
 API/app/sql_app/__pycache__
-API/app_rt/
+API/app_rt
 .pytest_cache
+API/app/dependencies/__pycache__/
+API/app/db/__pycache__/
+API/app/email_send/__pycache__/
+API/app/pydantic_schemas/__pycache__/
+API/app/routes/__pycache__/
