@@ -1,9 +1,9 @@
 import sqlalchemy
 
-import pydantic_schemas.schemas as schemas
-import db.models as models
-import dependencies.db as db_f
-import dependencies.task as task
+import app.pydantic_schemas.schemas as schemas
+import app.db.models as models
+import app.dependencies.db as db_f
+import app.dependencies.task as task
 
 from .exception import exception_409
 

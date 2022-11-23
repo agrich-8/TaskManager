@@ -4,10 +4,10 @@ import sqlalchemy
 from fastapi import HTTPException
 from fastapi import status
 
-import pydantic_schemas.schemas as schemas
-import db.models as models
-import dependencies.project as project 
-import dependencies.db as db_f
+import app.pydantic_schemas.schemas as schemas
+import app.db.models as models
+import app.dependencies.project as project 
+import app.dependencies.db as db_f
 from .exception import exception_409
 
 

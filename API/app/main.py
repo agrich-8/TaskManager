@@ -3,16 +3,17 @@ from fastapi import FastAPI
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 
-import db.models as models
+from .db import models
+# import db.models as models
 # from actions import get_db
 # from api import main_router
-from routes.auth import auth_router
-from routes.user import user_router
-from routes.project import project_router
-from routes.task import task_router
-from db.database import SessionLocal
-from db.database import engine
-from config import settings
+from app.routes.auth import auth_router
+from app.routes.user import user_router
+from app.routes.project import project_router
+from app.routes.task import task_router
+from app.db.database import SessionLocal
+from app.db.database import engine
+from app.config import settings
 
 async def get_db_reak():
    with SessionLocal () as s:

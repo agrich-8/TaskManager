@@ -1,0 +1,32 @@
+version: "3.7"
+
+services:
+
+  #nhinx service
+  web:
+    container_name: "web"
+    image: nginx:alpine
+    depends_on:
+      - app 
+    ports:
+      - "8082:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - custom
+
+  #application seervice
+  app:
+    container_name: "app"
+    image: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - custom
+    
+networks:
+  custom:
+    driver: bridge

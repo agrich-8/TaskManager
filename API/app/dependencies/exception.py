@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from fastapi import status
 
-import dependencies.user as user
+import app.dependencies.user as user
 
 def exception_409(exception_text: str):
     exception = HTTPException(

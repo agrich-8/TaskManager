@@ -9,9 +9,9 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError
 from jose import jwt
 
-import config
-import pydantic_schemas.schemas as schemas
-import dependencies.user as user_dep
+import app.config as config
+import app.pydantic_schemas.schemas as schemas
+import app.dependencies.user as user_dep
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")

@@ -4,11 +4,11 @@ from fastapi import APIRouter
 from fastapi import BackgroundTasks
 from fastapi import Depends
 
-import pydantic_schemas.schemas as schemas
-import db.models as models
-import dependencies.user as user_dep
-import dependencies.auth as auth_dep
-import email_send.email_send as email_send
+import app.pydantic_schemas.schemas as schemas
+import app.db.models as models
+import app.dependencies.user as user_dep
+import app.dependencies.auth as auth_dep
+import app.email_send.email_send as email_send
 
 
 user_router = APIRouter(tags=['User'])

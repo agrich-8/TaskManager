@@ -6,9 +6,9 @@ from fastapi import HTTPException
 from fastapi import status
 from fastapi.security import OAuth2PasswordRequestForm
 
-import pydantic_schemas.schemas as schemas
-import dependencies.auth as actions
-import config
+import app.pydantic_schemas.schemas as schemas
+import app.dependencies.auth as actions
+import app.config as config
 
 
 auth_router = APIRouter(prefix='/auth',

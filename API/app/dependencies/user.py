@@ -1,5 +1,5 @@
-import db.models as models
-import pydantic_schemas.schemas as schemas
+import app.db.models as models
+import app.pydantic_schemas.schemas as schemas
 from .db import get_db
 from .exception import exception_409_user
 from .project import create_project

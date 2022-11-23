@@ -1,11 +1,10 @@
 from fastapi import APIRouter
 from fastapi import Depends
 
-import pydantic_schemas.schemas as schemas
-import db.models as models
-import dependencies.auth as auth_dep
-import dependencies.project as project_dep
-
+import app.pydantic_schemas.schemas as schemas
+import app.db.models as models
+import app.dependencies.auth as auth_dep
+import app.dependencies.project as project_dep
 
 project_router = APIRouter(tags=['Project'])
 
