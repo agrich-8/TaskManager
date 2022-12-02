@@ -19,6 +19,8 @@ services:
   app:
     container_name: "app"
     image: app
+    depends_on:
+      - mysql
     build:
       context: .
       dockerfile: Dockerfile
@@ -26,7 +28,33 @@ services:
       - "8000:8000"
     networks:
       - custom
+
+  mysql:
+    image: mysql
+    container_name: "mysql-db"
+    restart: always
+    environment:
+      - MYSQL_DATABASE='tmdb'
+      - MYSQL_ROOT_PASSWORD='88uUheEWfk3'
+    build: app/db/
+      # context: .
+      # dockerfile: Dockerfile
+    ports:
+      - "3306:3306"
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+    volumes:
+      - db:/var/lib/mysql
+      - ./db/tmdb.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - custom
+
     
 networks:
   custom:
     driver: bridge
+
+volumes:
+  db:
+    driver: local
