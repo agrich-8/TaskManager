@@ -11,8 +11,13 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 class Settings(BaseSettings):
 
-    SQLALCHEMY_DATABASE_URL = "sqlite:///"+file_path
-
+    DB_USER = "root"
+    DB_PASSWORD = "88uUheEWfk3"
+    DB_HOST = "mysql-db"
+    DB_PORT = "3306"
+    DATABASE = "tmdb"
+    SQLALCHEMY_DATABASE_URL = 'mysql+pymysql://root:88uUheEWfk3@localhost/tmdb' #"sqlite:///"+file_path
+    # SQLALCHEMY_DATABASE_URL = 'mysql+pymysql://{}:{}@{}/{}?port={}?charset=utf8'.format(DB_USER, DB_PASSWORD, DB_HOST, DATABASE, DB_PORT)
     server_host: str = '127.0.0.1'
     server_port: int = 8003
 

@@ -1,4 +1,6 @@
 import sqlalchemy
+from fastapi import HTTPException
+from fastapi import status
 
 import app.pydantic_schemas.schemas as schemas
 import app.db.models as models
@@ -63,4 +65,10 @@ def delete_project(project_id: int, user_id: int):
         db.commit()
     except sqlalchemy.orm.exc.UnmappedInstanceError:
         raise exception_409(exception_text='The user has no specified project')
+    except sqlalchemy.orm.exc.StaleDataError:
+        exception = HTTPException(
+            status_code=status.HTTP_202_ACCEPTED,
+            detail='Task data removed'
+        )
+        raise exception
     return project

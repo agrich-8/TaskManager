@@ -25,7 +25,7 @@ class User(Base):
     hashed_password = Column(String)
 
     projects = relationship('Project', back_populates='user', passive_deletes=True, lazy='subquery')
-    tasks = relationship('Task', back_populates='user', passive_deletes=True, lazy='subquery')
+
 
     @property
     def password(self):
@@ -49,6 +49,7 @@ class Project(Base):
     title = Column(String, max_length=70)
     is_base_project = Column(Boolean, default=False)
     color = Column(String, max_length=10)
+    is_favorite = Column(Boolean, default=False)
     user_id = Column(Integer, ForeignKey('users.id'))
 
     user = relationship('User', back_populates='projects', passive_deletes=True, lazy='subquery')
@@ -69,9 +70,7 @@ class Task(Base):
     datetime_expiration = Column(DateTime)
     datetime_completion = Column(DateTime, nullable=True)
     datetime_added = Column(DateTime, default=datetime.datetime.now)
-    user_id = Column(Integer, ForeignKey('users.id'))
     project_id = Column(Integer, ForeignKey('projects.id'))
 
-    user = relationship('User', back_populates='tasks', passive_deletes=True, lazy='subquery')
     project = relationship('Project', back_populates='tasks', passive_deletes=True, lazy='subquery')
 
