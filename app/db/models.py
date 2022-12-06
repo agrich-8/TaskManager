@@ -20,8 +20,8 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    username = Column(String, max_length=30)
-    email = Column(String, max_length=50)
+    username = Column(String)
+    email = Column(String)
     hashed_password = Column(String)
 
     projects = relationship('Project', back_populates='user', passive_deletes=True, lazy='subquery')
@@ -46,9 +46,9 @@ class Project(Base):
     __tablename__ = 'projects'
 
     id = Column(Integer, primary_key=True)
-    title = Column(String, max_length=70)
+    title = Column(String)
     is_base_project = Column(Boolean, default=False)
-    color = Column(String, max_length=10)
+    color = Column(String)
     is_favorite = Column(Boolean, default=False)
     user_id = Column(Integer, ForeignKey('users.id'))
 
@@ -61,8 +61,8 @@ class Task(Base):
     __tablename__ = 'tasks'
 
     id = Column(Integer, primary_key=True)
-    title = Column(String, max_length=70)
-    description = Column(String, max_length=500)
+    title = Column(String)
+    description = Column(String)
     is_completed = Column(Boolean, default=False)
     position = Column(Integer)
     priority = Column(Integer)
