@@ -53,10 +53,6 @@ def update_task(user_id: int,
                 project_id: int | None = None, 
                 # **kwargs
                 ):
-
-    # for key, vol in kwargs.items():
-    # d = dict(filter(lambda x:x[1], kwargs.items()))
-    # print(d)
     
     db = next(db_f.get_db())
     exception = HTTPException(
